@@ -1,11 +1,17 @@
-#include "mainwindow.h"
-
 #include <QApplication>
+#include <Escena.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return QApplication::exec();
+    rectangulo rectangulo(500,500);
+
+
+    cout << "Ancho: " << rectangulo.getAncho() << endl;
+    cout << "Alto: " << rectangulo.getAlto() << endl;
+
+    rectangulo.mostrar();
+
+
+    return a.exec();
 }
