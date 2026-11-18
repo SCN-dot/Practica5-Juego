@@ -76,8 +76,8 @@ int main(int argc, char *argv[])
     QObject::connect(
         &temporizador,
         &QTimer::timeout,
-        [&]() {
-
+        [&]()
+        {
             simulacion.actualizar();
 
             ventana.actualizarProyectil(
@@ -86,12 +86,31 @@ int main(int argc, char *argv[])
 
             ventana.actualizarEstructuras();
 
-            if (!simulacion.estaActiva()) {
+            if (!simulacion.estaActiva())
+            {
                 temporizador.stop();
                 cout << "Simulacion finalizada" << endl;
             }
         }
-        );
+    );
+    QObject::connect(
+        &controles,
+        &Controles::lanzamientoSolicitado,
+        [&](double velocidad, double angulo)
+        {
+            cout << "Velocidad: " << velocidad << endl;
+            cout << "Angulo: " << angulo << endl;
+
+            if (!proyectil.configurarLanzamiento(velocidad, angulo))
+            {
+                cout << "Error al configurar el lanzamiento" << endl;
+                return;
+            }
+
+            temporizador.start(10);
+        }
+    );
+
 
     // 12. Mostrar ventana e iniciar simulación
     ventana.mostrar();
