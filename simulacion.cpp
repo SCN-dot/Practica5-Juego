@@ -89,3 +89,9 @@ Particula* Simulacion::getProyectil() const
 {
     return proyectil;
 }
+
+Simulacion::~Simulacion()
+{
+    delete proyectil;
+    proyectil = nullptr;
+}

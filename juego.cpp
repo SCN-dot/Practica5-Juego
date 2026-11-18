@@ -48,6 +48,7 @@ void Juego::iniciarSimulacion(Simulacion* simulacion)
         throw logic_error("Ya existe una simulacion en curso.");
     }
 
+    delete simulacionActual;
     simulacionActual = simulacion;
 }
 
@@ -60,11 +61,10 @@ void Juego::actualizar()
     simulacionActual->actualizar();
 
     if (!simulacionActual->estaActiva()) {
-
+        delete simulacionActual;
         simulacionActual = nullptr;
 
-        if (jugadores[0]->haPerdido() ||
-            jugadores[1]->haPerdido()) {
+        if (jugadores[0]->haPerdido() ||jugadores[1]->haPerdido()) {
 
             terminado = true;
             return;
@@ -91,4 +91,38 @@ Jugador* Juego::getGanador() const
     }
 
     return nullptr;
+}
+pair<double, double> Juego::calcularPuntoLanzamiento(double radio) const
+{
+    if (radio <= 0) {
+        throw invalid_argument("El radio del proyectil debe ser positivo.");
+    }
+
+    const Estructura* estructura =
+        jugadores[turnoActual]->getEstructuraPrincipal();
+
+    if (estructura == nullptr) {
+        throw logic_error("El jugador no tiene una estructura principal.");
+    }
+
+    double x = estructura->obtenerX()
+               + estructura->obtenerAncho() / 2.0;
+
+    double y = estructura->obtenerY() - radio;
+
+    return {x, y};
+}
+
+Juego::~Juego()
+{
+    delete simulacionActual;
+    simulacionActual = nullptr;
+}
+Particula* Juego::getProyectilActual() const
+{
+    if (simulacionActual == nullptr ||!simulacionActual->estaActiva()){
+        return nullptr;
+    }
+
+    return simulacionActual->getProyectil();
 }

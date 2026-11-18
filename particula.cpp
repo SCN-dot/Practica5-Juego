@@ -20,21 +20,24 @@ void Particula::setVelocidad(double nvx, double nvy) {
     vx = nvx;
     vy = nvy;
 }
-bool Particula::configurarLanzamiento(double velocidadInicial, double anguloGrados)
+bool Particula::configurarLanzamiento(double velocidadInicial,double anguloGrados, int direccion)
 {
+    if (direccion != 1 && direccion != -1)
+        return false;
+
     if (!std::isfinite(velocidadInicial) ||
         !std::isfinite(anguloGrados) ||
         velocidadInicial <= 0 ||
         anguloGrados < 0 ||
-        anguloGrados > 90) {
+        anguloGrados > 90)
+    {
         return false;
     }
 
     const double PI = 3.14159265358979323846;
-
     double anguloRadianes = anguloGrados * PI / 180.0;
 
-    double vx = velocidadInicial * cos(anguloRadianes);
+    double vx = direccion * velocidadInicial * cos(anguloRadianes);
     double vy = -velocidadInicial * sin(anguloRadianes);
 
     setVelocidad(vx, vy);

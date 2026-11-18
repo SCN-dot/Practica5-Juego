@@ -23,17 +23,23 @@ Controles::Controles(QObject* parent)
 
 void Controles::aumentarAngulo()
 {
-    if (angulo < 90.0){
+    if (angulo < 90.0)
+    {
         angulo += 1.0;
+        emit anguloActualizado(angulo);
     }
+
     cout << "Angulo: " << angulo << endl;
 }
 
 void Controles::disminuirAngulo()
 {
-    if (angulo > 0.0){
+    if (angulo > 0.0)
+    {
         angulo -= 1.0;
+        emit anguloActualizado(angulo);
     }
+
     cout << "Angulo: " << angulo << endl;
 }
 
@@ -44,7 +50,9 @@ void Controles::iniciarCarga()
 
     cargando = true;
     velocidad = 20.0;
-    cout << "iniciando carga" << endl;
+
+    emit potenciaActualizada(velocidad);
+
     temporizadorCarga.start();
 }
 
@@ -61,6 +69,9 @@ void Controles::liberarCarga()
 
 void Controles::actualizarPotencia()
 {
+    if (velocidad >= velocidadMaxima)
+        return;
+
     velocidad += 1.0;
 
     if (velocidad >= velocidadMaxima)
@@ -68,6 +79,8 @@ void Controles::actualizarPotencia()
         velocidad = velocidadMaxima;
         temporizadorCarga.stop();
     }
+
+    emit potenciaActualizada(velocidad);
 }
 
 double Controles::getAngulo() const

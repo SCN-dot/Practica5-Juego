@@ -11,14 +11,13 @@ private:
 
 public:
     Particula(double x, double y, double vx, double vy, double masa, double radio);
-
     double getX() const;
     double getY() const;
     double getVx() const;
     double getVy() const;
     double getMasa() const;
     double getRadio() const;
-    bool configurarLanzamiento(double velocidadInicial, double anguloGrados);
+    bool configurarLanzamiento(double velocidadInicial, double anguloGrados,int direccion);
     void setPosicion(double nx, double ny);
     void setVelocidad(double nvx, double nvy);
 };

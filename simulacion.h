@@ -27,6 +27,7 @@ public:
     void actualizar();
     bool estaActiva() const;
     Particula* getProyectil() const;
+    ~Simulacion();
 };
 
 

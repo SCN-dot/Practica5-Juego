@@ -36,6 +36,10 @@ private slots:
 signals:
     void lanzamientoSolicitado(double velocidad, double angulo);
 
+    void anguloActualizado(double angulo);
+
+    void potenciaActualizada(double velocidad);
+
 protected:
     bool eventFilter(QObject* objeto, QEvent* evento) override;
 };

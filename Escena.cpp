@@ -1,63 +1,119 @@
 #include "Escena.h"
 #include <QPen>
 #include <QBrush>
-rectangulo::rectangulo(double ancho, double alto)
-    : scene(nullptr),
-    rect(nullptr),
-    vista(nullptr),
-    proyectilGrafico(nullptr),
-    ancho(ancho),
-    alto(alto)
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QString>
+
+// Constructor
+rectangulo::rectangulo(double ancho, double alto): QObject(nullptr),scene(nullptr),rect(nullptr),vista(nullptr),proyectilGrafico(nullptr),etiquetaAngulo(nullptr),etiquetaPotencia(nullptr),
+    barraPotencia(nullptr),panelControles(nullptr),ancho(ancho),alto(alto)
 {
-    scene = new QGraphicsScene();
+    // 1. Crear el panel principal
+    panelControles = new QWidget();
+
+    // 2. Crear la escena gráfica
+    scene = new QGraphicsScene(panelControles);
 
     rect = scene->addRect(
-        0,
-        0,
-        ancho,
-        alto,
-        QPen(Qt::black, 4),
-        QBrush(Qt::NoBrush)
-        );
+        0, 0,ancho,alto,QPen(Qt::black, 4),QBrush(Qt::NoBrush));
 
-    vista = new QGraphicsView(scene);
-
+    // 3. Crear la vista gráfica
+    vista = new QGraphicsView(scene, panelControles);
     vista->setSceneRect(0, 0, ancho, alto);
+
+    // 4. Crear las etiquetas
+    etiquetaAngulo = new QLabel("Ángulo: 45°");
+    etiquetaPotencia = new QLabel("Potencia: 20 / 60");
+
+    // 5. Crear la barra de potencia
+    barraPotencia = new QProgressBar();
+    barraPotencia->setRange(20, 60);
+    barraPotencia->setValue(20);
+    barraPotencia->setFormat("%v / %m");
+
+    // 6. Organizar los indicadores horizontalmente
+    QHBoxLayout* layoutIndicadores = new QHBoxLayout();
+
+    layoutIndicadores->addWidget(etiquetaAngulo);
+    layoutIndicadores->addWidget(etiquetaPotencia);
+    layoutIndicadores->addWidget(barraPotencia);
+
+    // 7. Organizar los indicadores y la escena verticalmente
+    QVBoxLayout* layoutPrincipal = new QVBoxLayout(panelControles);
+
+    layoutPrincipal->addLayout(layoutIndicadores);
+    layoutPrincipal->addWidget(vista, 1);
+
+    // 8. Configurar la ventana
+    panelControles->setWindowTitle("Juego de proyectiles");
 }
 
+// Mostrar ventana
 void rectangulo::mostrar()
 {
-    vista->show();
+    panelControles->show();
 }
 
+// Actualizar ángulo
+void rectangulo::actualizarAngulo(double angulo)
+{
+    etiquetaAngulo->setText(
+        QString("Ángulo: %1°").arg(angulo, 0, 'f', 0)
+        );
+}
+
+// Actualizar potencia
+void rectangulo::actualizarPotencia(double potencia)
+{
+    int valor = static_cast<int>(potencia);
+
+    barraPotencia->setValue(valor);
+
+    etiquetaPotencia->setText(
+        QString("Potencia: %1 / 60").arg(valor)
+        );
+}
+
+// Obtener ancho
 double rectangulo::getAncho() const
 {
     return ancho;
 }
 
+// Obtener alto
 double rectangulo::getAlto() const
 {
     return alto;
 }
 
+// Modificar ancho
 void rectangulo::setAncho(double nuevoAncho)
 {
-    if (nuevoAncho <= 0) return;
+    if (nuevoAncho <= 0)
+        return;
 
     ancho = nuevoAncho;
+
     rect->setRect(0, 0, ancho, alto);
     scene->setSceneRect(0, 0, ancho, alto);
+    vista->setSceneRect(0, 0, ancho, alto);
 }
 
+// Modificar alto
 void rectangulo::setAlto(double nuevoAlto)
 {
-    if (nuevoAlto <= 0) return;
+    if (nuevoAlto <= 0)
+        return;
 
     alto = nuevoAlto;
+
     rect->setRect(0, 0, ancho, alto);
     scene->setSceneRect(0, 0, ancho, alto);
+    vista->setSceneRect(0, 0, ancho, alto);
 }
 
+// Dibujar estructura
 void rectangulo::dibujarEstructura(const Estructura& estructura)
 {
     // Dibujar estructura
@@ -84,18 +140,34 @@ void rectangulo::dibujarEstructura(const Estructura& estructura)
         QBrush(Qt::gray)
         );
 
-    // Barra de resistencia actual
-    double porcentaje =
-        estructura.getResistencia() /
-        estructura.getResistenciaMax();
+    // Calcular resistencia proporcional
+    double porcentaje = 0.0;
 
+    if (estructura.getResistenciaMax() > 0)
+    {
+        porcentaje =
+            estructura.getResistencia() /
+            estructura.getResistenciaMax();
+    }
+
+    // Limitar porcentaje
+    if (porcentaje < 0.0)
+        porcentaje = 0.0;
+
+    if (porcentaje > 1.0)
+        porcentaje = 1.0;
+
+    // Barra de resistencia actual
     QGraphicsRectItem* barraResistencia = scene->addRect(
-        x, y, anchoBarra * porcentaje, altoBarra,
+        x,
+        y,
+        anchoBarra * porcentaje,
+        altoBarra,
         QPen(Qt::NoPen),
         QBrush(Qt::green)
         );
 
-    // Guardar referencias
+    // Guardar referencias gráficas
     ElementoGrafico elemento;
 
     elemento.estructura = &estructura;
@@ -105,9 +177,17 @@ void rectangulo::dibujarEstructura(const Estructura& estructura)
 
     estructurasGraficas.push_back(elemento);
 }
-
+// dibujar proyectil
 void rectangulo::dibujarProyectil(const Particula& proyectil)
 {
+    // Eliminar el proyectil gráfico anterior
+    if (proyectilGrafico != nullptr)
+    {
+        scene->removeItem(proyectilGrafico);
+        delete proyectilGrafico;
+        proyectilGrafico = nullptr;
+    }
+
     double radio = proyectil.getRadio();
 
     double x = proyectil.getX() - radio;
@@ -123,6 +203,7 @@ void rectangulo::dibujarProyectil(const Particula& proyectil)
         );
 }
 
+// Actualizar posición del proyectil
 void rectangulo::actualizarProyectil(const Particula& proyectil)
 {
     if (proyectilGrafico == nullptr)
@@ -140,10 +221,14 @@ void rectangulo::actualizarProyectil(const Particula& proyectil)
         radio * 2
         );
 }
+
+// Obtener vista gráfica
 QGraphicsView* rectangulo::getVista() const
 {
     return vista;
 }
+
+// Actualizar estructuras
 void rectangulo::actualizarEstructuras()
 {
     auto it = estructurasGraficas.begin();
@@ -166,10 +251,16 @@ void rectangulo::actualizarEstructuras()
         }
         else
         {
-            double porcentaje =
-                estructura->getResistencia() /
-                estructura->getResistenciaMax();
+            double porcentaje = 0.0;
 
+            if (estructura->getResistenciaMax() > 0)
+            {
+                porcentaje =
+                    estructura->getResistencia() /
+                    estructura->getResistenciaMax();
+            }
+
+            // Limitar porcentaje
             if (porcentaje < 0.0)
                 porcentaje = 0.0;
 
@@ -179,6 +270,7 @@ void rectangulo::actualizarEstructuras()
             double anchoActual =
                 estructura->obtenerAncho() * porcentaje;
 
+            // Actualizar dimensiones de la barra
             it->barraResistencia->setRect(
                 estructura->obtenerX(),
                 estructura->obtenerY() - 15.0,
@@ -186,15 +278,37 @@ void rectangulo::actualizarEstructuras()
                 8.0
                 );
 
-            // Cambiar el color según la resistencia
+            // Cambiar color según la resistencia
             if (porcentaje > 0.5)
-                it->barraResistencia->setBrush(QBrush(Qt::green));
+            {
+                it->barraResistencia->setBrush(
+                    QBrush(Qt::green)
+                    );
+            }
             else if (porcentaje > 0.2)
-                it->barraResistencia->setBrush(QBrush(Qt::yellow));
+            {
+                it->barraResistencia->setBrush(
+                    QBrush(Qt::yellow)
+                    );
+            }
             else
-                it->barraResistencia->setBrush(QBrush(Qt::red));
+            {
+                it->barraResistencia->setBrush(
+                    QBrush(Qt::red)
+                    );
+            }
 
             ++it;
         }
+    }
+}
+
+void rectangulo::eliminarProyectil()
+{
+    if (proyectilGrafico != nullptr)
+    {
+        scene->removeItem(proyectilGrafico);
+        delete proyectilGrafico;
+        proyectilGrafico = nullptr;
     }
 }
