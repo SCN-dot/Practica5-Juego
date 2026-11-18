@@ -8,10 +8,16 @@ CONFIG += c++17
 
 SOURCES += \
     Escena.cpp \
-    main.cpp
+    estructura.cpp \
+    main.cpp \
+    obstaculo.cpp \
+    particula.cpp
 
 HEADERS += \
-    Escena.h
+    Escena.h \
+    estructura.h \
+    obstaculo.h \
+    particula.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
