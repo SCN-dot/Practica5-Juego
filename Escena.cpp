@@ -1,40 +1,133 @@
 #include "Escena.h"
-
-
-rectangulo::rectangulo(double ancho, double alto): ancho(ancho), alto(alto)
+#include <QPen>
+#include <QBrush>
+rectangulo::rectangulo(double ancho, double alto)
+    : scene(nullptr),
+    rect(nullptr),
+    vista(nullptr),
+    proyectilGrafico(nullptr),
+    ancho(ancho),
+    alto(alto)
 {
     scene = new QGraphicsScene();
-    rect = new QGraphicsRectItem();
 
-    rect-> setRect(0,0,ancho,alto);
-    scene -> addItem(rect);
+    rect = scene->addRect(
+        0,
+        0,
+        ancho,
+        alto,
+        QPen(Qt::black, 4),
+        QBrush(Qt::NoBrush)
+        );
 
-    vista= new QGraphicsView(scene);
+    vista = new QGraphicsView(scene);
 
+    vista->setSceneRect(0, 0, ancho, alto);
 }
-double rectangulo::getAlto()const{
+
+void rectangulo::mostrar()
+{
+    vista->show();
+}
+
+double rectangulo::getAncho() const
+{
     return ancho;
 }
-double rectangulo::getAncho() const{
+
+double rectangulo::getAlto() const
+{
     return alto;
 }
 
-void rectangulo::setAncho(double nuevoAncho){
-    do{
-        cout << "Ingrese una dimension valida: " << endl;
-        cin >> nuevoAncho;
-    }
-    while(nuevoAncho <=0);
+void rectangulo::setAncho(double nuevoAncho)
+{
+    if (nuevoAncho <= 0) return;
+
+    ancho = nuevoAncho;
+    rect->setRect(0, 0, ancho, alto);
+    scene->setSceneRect(0, 0, ancho, alto);
 }
 
-void rectangulo::setAlto(double nuevoAlto){
-    do{
-        cout << "Ingrese una dimesion valida: " << endl;
-        cin >> nuevoAlto;
-    }
-    while(nuevoAlto <= 0);
+void rectangulo::setAlto(double nuevoAlto)
+{
+    if (nuevoAlto <= 0) return;
+
+    alto = nuevoAlto;
+    rect->setRect(0, 0, ancho, alto);
+    scene->setSceneRect(0, 0, ancho, alto);
 }
 
-void rectangulo::mostrar(){
-    vista -> show();
+void rectangulo::dibujarEstructura(const Estructura& estructura)
+{
+    QGraphicsRectItem* figura = scene->addRect(
+        estructura.obtenerX(),
+        estructura.obtenerY(),
+        estructura.obtenerAncho(),
+        estructura.obtenerAlto(),
+        QPen(Qt::black, 3),
+        QBrush(Qt::NoBrush)
+        );
+
+    ElementoGrafico elemento;
+
+    elemento.estructura = &estructura;
+    elemento.figura = figura;
+
+    estructurasGraficas.push_back(elemento);
+}
+
+void rectangulo::dibujarProyectil(const Particula& proyectil)
+{
+    double radio = proyectil.getRadio();
+
+    double x = proyectil.getX() - radio;
+    double y = proyectil.getY() - radio;
+
+    proyectilGrafico = scene->addEllipse(
+        x,
+        y,
+        radio * 2,
+        radio * 2,
+        QPen(Qt::black, 2),
+        QBrush(Qt::red)
+        );
+}
+
+void rectangulo::actualizarProyectil(const Particula& proyectil)
+{
+    if (proyectilGrafico == nullptr)
+        return;
+
+    double radio = proyectil.getRadio();
+
+    double x = proyectil.getX() - radio;
+    double y = proyectil.getY() - radio;
+
+    proyectilGrafico->setRect(
+        x,
+        y,
+        radio * 2,
+        radio * 2
+        );
+}
+void rectangulo::actualizarEstructuras()
+{
+    auto it = estructurasGraficas.begin();
+
+    while (it != estructurasGraficas.end())
+    {
+        if (it->estructura->estaDestruida())
+        {
+            scene->removeItem(it->figura);
+
+            delete it->figura;
+
+            it = estructurasGraficas.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }

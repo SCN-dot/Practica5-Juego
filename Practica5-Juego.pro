@@ -7,19 +7,30 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Caja.cpp \
     Escena.cpp \
-    estructura.cpp \
+    Estructura.cpp \
+    Obstaculo.cpp \
+    juego.cpp \
+    jugador.cpp \
     main.cpp \
-    obstaculo.cpp \
-    particula.cpp
+    particula.cpp \
+    simulacion.cpp
 
 HEADERS += \
+    Caja.h \
     Escena.h \
-    estructura.h \
-    obstaculo.h \
-    particula.h
+    Estructura.h \
+    Obstaculo.h \
+    juego.h \
+    jugador.h \
+    particula.h \
+    simulacion.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    recursos.qrc

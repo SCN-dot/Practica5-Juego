@@ -1,32 +1,26 @@
 #ifndef PARTICULA_H
 #define PARTICULA_H
-using namespace std;
-#include <iostream>
 
-class Particula{
+class Particula
+{
 private:
-    double x;
-    double y;
-    double vx;
-    double vy;
+    double x, y;     // posicion del centro
+    double vx, vy;   // velocidad
     double masa;
     double radio;
-    bool activa;
 
 public:
-    Particula(double x, double y,double vx, double vy,double masa, double radio);
+    Particula(double x, double y, double vx, double vy, double masa, double radio);
+
     double getX() const;
     double getY() const;
     double getVx() const;
     double getVy() const;
     double getMasa() const;
     double getRadio() const;
-    bool estaActiva() const;
+    bool configurarLanzamiento(double velocidadInicial, double anguloGrados);
     void setPosicion(double nx, double ny);
     void setVelocidad(double nvx, double nvy);
-    void setActiva(bool valor);
-    void actualizar(double dt);
-    bool estaEnMovimiento() const;
 };
 
 #endif // PARTICULA_H

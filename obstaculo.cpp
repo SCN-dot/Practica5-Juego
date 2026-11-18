@@ -1,113 +1,79 @@
-#include "obstaculo.h"
-#include <algorithm>
+#include "Obstaculo.h"
 
-obstaculo::obstaculo(double x, double y,double ancho, double alto): x(x),y(y),ancho(ancho),alto(alto)
-{
+Obstaculo::Obstaculo(double x, double y, double ancho, double alto){
+    this->x = x;
+    this->y = y;
+    this->ancho = ancho;
+    this->alto = alto;
 }
 
-double obstaculo::obtenerX() const {
-    return x;
-}
-double obstaculo::obtenerY() const {
-    return y;
-}
+double Obstaculo::obtenerX() const { return x; }
+double Obstaculo::obtenerY() const { return y; }
+double Obstaculo::obtenerAncho() const { return ancho; }
+double Obstaculo::obtenerAlto() const { return alto; }
 
-double obstaculo::obtenerAncho() const {
-    return ancho;
-}
+Lado Obstaculo::ladoDeChoque(const Particula &p) const {
+    double xMin = x, xMax = x + ancho;
+    double yMin = y, yMax = y + alto;
 
-double obstaculo::obtenerAlto() const {
-    return alto;
-}
+    double px = p.getX();
+    double py = p.getY();
+    double r = p.getRadio();
 
-Lado obstaculo::ladoDeChoque(const Particula& p) const
-{
-    double xMin = x;
-    double xMax = x + ancho;
-    double yMin = y;
-    double yMax = y + alto;
-    double cx = clamp(p.getX(), xMin, xMax);
-    double cy = clamp(p.getY(), yMin, yMax);
-    double dx = p.getX() - cx;
-    double dy = p.getY() - cy;
+    double cx = px;
+    if (cx < xMin) cx = xMin;
+    if (cx > xMax) cx = xMax;
 
-    double distanciaCuadrada = dx * dx + dy * dy;
+    double cy = py;
+    if (cy < yMin) cy = yMin;
+    if (cy > yMax) cy = yMax;
 
-    double radio = p.getRadio();
-
-
-    if (distanciaCuadrada > radio * radio){
+    double dx = px - cx;
+    double dy = py - cy;
+    if (dx * dx + dy * dy > r * r) {
         return NINGUNO;
     }
 
+    if (dx != 0 && dy != 0) {
+        Lado ladoX = (dx < 0) ? IZQUIERDA : DERECHA;
+        Lado ladoY = (dy < 0) ? ABAJO : ARRIBA;
 
-    if (abs(dx) > abs(dy)) {
-        if (dx < 0) {
-            return IZQUIERDA;
-        }
-        else {
-            return DERECHA;
-        }
-    }
-    if (abs(dy) > 0) {
-        if (dy < 0) {
-            return ARRIBA;
-        }
-        else {
-            return ABAJO;
-        }
+        bool seAcercaX = (ladoX == IZQUIERDA && p.getVx() > 0) || (ladoX == DERECHA && p.getVx() < 0);
+        bool seAcercaY = (ladoY == ABAJO && p.getVy() > 0) || (ladoY == ARRIBA && p.getVy() < 0);
+
+        if (seAcercaX && !seAcercaY) return ladoX;
+        if (seAcercaY && !seAcercaX) return ladoY;
+        return (dx * dx > dy * dy) ? ladoX : ladoY;
     }
 
+    if (dx != 0) {
+        return (dx < 0) ? IZQUIERDA : DERECHA;
+    }
+    if (dy != 0) {
+        return (dy < 0) ? ABAJO : ARRIBA;
+    }
 
-    double dIzq = p.getX() - xMin;
-    double dDer = xMax - p.getX();
+    double dIzq = px - xMin;
+    double dDer = xMax - px;
+    double dAba = py - yMin;
+    double dArr = yMax - py;
 
-    double dArr = p.getY() - yMin;
-    double dAba = yMax - p.getY();
-
-    double menor = dIzq;
     Lado lado = IZQUIERDA;
-
-    if (dDer < menor) {
-        menor = dDer;
-        lado = DERECHA;
-    }
-
-    if (dArr < menor) {
-        menor = dArr;
-        lado = ARRIBA;
-    }
-
-    if (dAba < menor) {
-        lado = ABAJO;
-    }
-
+    double menor = dIzq;
+    if (dDer < menor) { menor = dDer; lado = DERECHA; }
+    if (dAba < menor) { menor = dAba; lado = ABAJO; }
+    if (dArr < menor) { menor = dArr; lado = ARRIBA; }
     return lado;
 }
 
-void obstaculo::sacarParticula(Particula& p, Lado lado) const
-{
+void Obstaculo::sacarParticula(Particula &p, Lado lado) const {
     double r = p.getRadio();
+    if (lado == IZQUIERDA) p.setPosicion(x - r, p.getY());
+    if (lado == DERECHA)   p.setPosicion(x + ancho + r, p.getY());
+    if (lado == ABAJO)     p.setPosicion(p.getX(), y - r);
+    if (lado == ARRIBA)    p.setPosicion(p.getX(), y + alto + r);
+}
 
-    switch (lado) {
-
-    case IZQUIERDA:
-        p.setPosicion(x - r, p.getY());
-        break;
-
-    case DERECHA:
-        p.setPosicion(x + ancho + r, p.getY());
-        break;
-
-    case ARRIBA:
-        p.setPosicion(p.getX(), y - r);
-        break;
-
-    case ABAJO:
-        p.setPosicion(p.getX(), y + alto + r);
-        break;
-
-    default:
-        break;
-    }
+Obstaculo::~Obstaculo()
+{
 }
