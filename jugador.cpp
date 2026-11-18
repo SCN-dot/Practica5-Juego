@@ -2,18 +2,18 @@
 #include <stdexcept>
 
 Jugador::Jugador(const string& nombre,
-                 Estructura* estructuraPrincipal,
+                 Personaje* personaje,
                  const vector<Estructura*>& bloques)
     : nombre(nombre),
-    estructuraPrincipal(estructuraPrincipal),
+    personaje(personaje),
     bloques(bloques)
 {
     if (nombre.empty()) {
         throw invalid_argument("El jugador debe tener un nombre.");
     }
 
-    if (estructuraPrincipal == nullptr) {
-        throw invalid_argument("El jugador debe tener una estructura principal.");
+    if (personaje == nullptr) {
+        throw invalid_argument("El jugador debe tener un personaje.");
     }
 
     if (bloques.size() != 3) {
@@ -25,19 +25,6 @@ Jugador::Jugador(const string& nombre,
             throw invalid_argument("Ningun bloque puede ser nulo.");
         }
     }
-
-    bool principalEncontrada = false;
-
-    for (Estructura* bloque : bloques) {
-        if (bloque == estructuraPrincipal) {
-            principalEncontrada = true;
-            break;
-        }
-    }
-
-    if (!principalEncontrada) {
-        throw invalid_argument("La estructura principal debe ser uno de los tres bloques.");
-    }
 }
 
 string Jugador::getNombre() const
@@ -45,9 +32,9 @@ string Jugador::getNombre() const
     return nombre;
 }
 
-Estructura* Jugador::getEstructuraPrincipal() const
+Personaje* Jugador::getPersonaje() const
 {
-    return estructuraPrincipal;
+    return personaje;
 }
 
 const vector<Estructura*>& Jugador::getBloques() const
@@ -57,5 +44,5 @@ const vector<Estructura*>& Jugador::getBloques() const
 
 bool Jugador::haPerdido() const
 {
-    return estructuraPrincipal->estaDestruida();
+    return personaje->estaAlcanzado();
 }

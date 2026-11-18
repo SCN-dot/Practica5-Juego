@@ -16,6 +16,7 @@ SOURCES += \
     jugador.cpp \
     main.cpp \
     particula.cpp \
+    personaje.cpp \
     simulacion.cpp
 
 HEADERS += \
@@ -27,6 +28,7 @@ HEADERS += \
     juego.h \
     jugador.h \
     particula.h \
+    personaje.h \
     simulacion.h
 
 # Default rules for deployment.
@@ -35,4 +37,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    recursos.qrc
+    recusos.qrc

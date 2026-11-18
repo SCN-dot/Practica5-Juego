@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/imagenes">
+        <file>temple.png</file>
+        <file>Trump.png</file>
+        <file>whithe.png</file>
+        <file>Xi.png</file>
+        <file>Campo de batalla costero bajo tormenta.png</file>
+    </qresource>
+    <qresource prefix="/musica"/>
+</RCC>

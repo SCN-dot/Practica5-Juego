@@ -1,11 +1,13 @@
 #include <QApplication>
 #include <QTimer>
+#include <QString>
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 #include "Escena.h"
 #include "Estructura.h"
-#include "particula.h"
+#include "Personaje.h"
+#include "Particula.h"
 #include "Caja.h"
 #include "Simulacion.h"
 #include "Jugador.h"
@@ -18,47 +20,184 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    // 1. Dimensiones de la caja
+    // =====================================================
+    // 1. DIMENSIONES DE LA CAJA
+    // =====================================================
+
     const double ANCHO_CAJA = 1000.0;
     const double ALTO_CAJA = 600.0;
 
-    // 2. Crear ventana y controles
     rectangulo ventana(ANCHO_CAJA, ALTO_CAJA);
+
+    // =====================================================
+    // 2. CONTROLES DEL JUEGO
+    // =====================================================
 
     Controles controles;
     controles.instalarEn(ventana.getVista());
 
-    // 3. Crear estructuras
-    Estructura estructura1(50, 390, 150, 150, 100, true);
-    Estructura estructura2(800, 390, 150, 150, 100, true);
+    // =====================================================
+    // 3. CREACIÓN DE LAS ESTRUCTURAS
+    // =====================================================
 
-    // 4. Dibujar estructuras
-    ventana.dibujarEstructura(estructura1);
-    ventana.dibujarEstructura(estructura2);
+    // Jugador 1: fortificación izquierda
 
-    // 5. Crear jugadores
-    Jugador jugador1("Jugador 1", &estructura1);
-    Jugador jugador2("Jugador 2", &estructura2);
+    Estructura bloque1Izquierdo(
+        50, 410, 20, 110, 100, true
+        );
 
-    // 6. Crear juego
-    Juego juego(&jugador1, &jugador2);
+    Estructura bloque1Derecho(
+        180, 410, 20, 110, 100, true
+        );
 
-    // 7. Configurar física
-    Caja cajaFisica(ANCHO_CAJA, ALTO_CAJA, 0.7);
+    Estructura bloque1Superior(
+        50, 390, 150, 20, 100, true
+        );
+
+    // Jugador 2: fortificación derecha
+
+    Estructura bloque2Izquierdo(
+        800, 410, 20, 110, 100, true
+        );
+
+    Estructura bloque2Derecho(930, 410, 20, 110, 100, true);
+
+    Estructura bloque2Superior(800, 390, 150, 20, 100, true);
+
+    // =====================================================
+    // 4. CREACIÓN DE LOS PERSONAJES
+    // =====================================================
+
+    Personaje personaje1(105, 430, 60, 80);
+
+    Personaje personaje2(855, 430, 60, 80);
+
+    // =====================================================
+    // 5. DIBUJO DEL FONDO
+    // =====================================================
+
+    ventana.dibujarFondo(
+        QStringLiteral(
+            ":/imagenes/Campo de batalla costero bajo tormenta.png"
+            )
+        );
+
+    // =====================================================
+    // 6. DIBUJO DE LAS FORTIFICACIONES
+    // =====================================================
+
+    // Jugador 1
+    // Los bloques laterales siguen siendo rectángulos.
+    // La imagen de la Casa Blanca sustituye el bloque superior.
+
+    ventana.dibujarEstructura(bloque1Izquierdo);
+
+    ventana.dibujarEstructura(bloque1Derecho);
+
+    ventana.dibujarEstructura(
+        bloque1Superior,
+        QStringLiteral(":/imagenes/whithe.png")
+        );
+
+    // Jugador 2
+    // Los bloques laterales siguen siendo rectángulos.
+    // La imagen del templo sustituye el bloque superior.
+
+    ventana.dibujarEstructura(bloque2Izquierdo);
+
+    ventana.dibujarEstructura(bloque2Derecho);
+
+    ventana.dibujarEstructura(
+        bloque2Superior,
+        QStringLiteral(":/imagenes/temple.png")
+        );
+
+    // =====================================================
+    // 7. DIBUJO DE LOS PERSONAJES
+    // =====================================================
+
+    ventana.dibujarPersonaje(
+        personaje1,
+        QStringLiteral(":/imagenes/Trump.png")
+        );
+
+    ventana.dibujarPersonaje(
+        personaje2,
+        QStringLiteral(":/imagenes/Xi.png")
+        );
+
+    // =====================================================
+    // 8. ASIGNACIÓN DE BLOQUES A CADA JUGADOR
+    // =====================================================
+
+    vector<Estructura*> bloquesJugador1 = {
+        &bloque1Izquierdo,
+        &bloque1Derecho,
+        &bloque1Superior
+    };
+
+    vector<Estructura*> bloquesJugador2 = {
+        &bloque2Izquierdo,
+        &bloque2Derecho,
+        &bloque2Superior
+    };
+
+    // =====================================================
+    // 9. CREACIÓN DE LOS JUGADORES
+    // =====================================================
+
+    Jugador jugador1(
+        "Jugador 1",
+        &personaje1,
+        bloquesJugador1
+        );
+
+    Jugador jugador2(
+        "Jugador 2",
+        &personaje2,
+        bloquesJugador2
+        );
+
+    // =====================================================
+    // 10. CREACIÓN DEL JUEGO
+    // =====================================================
+
+    Juego juego(
+        &jugador1,
+        &jugador2
+        );
+
+    // =====================================================
+    // 11. CONFIGURACIÓN DE LA FÍSICA
+    // =====================================================
+
+    Caja cajaFisica(
+        ANCHO_CAJA,
+        ALTO_CAJA,
+        0.7
+        );
 
     vector<Estructura*> estructuras = {
-        &estructura1,
-        &estructura2
+        &bloque1Izquierdo,
+        &bloque1Derecho,
+        &bloque1Superior,
+
+        &bloque2Izquierdo,
+        &bloque2Derecho,
+        &bloque2Superior
     };
 
     const double gravedad = 9.81;
     const double dt = 0.05;
-    const double factorDanio = 2.0;
+    const double factorDanio = 1.0;
 
     const double MASA_PROYECTIL = 1.0;
     const double RADIO_PROYECTIL = 5.0;
 
-    // 8. Temporizador
+    // =====================================================
+    // 12. TEMPORIZADOR DE LA SIMULACIÓN
+    // =====================================================
+
     QTimer temporizador;
 
     QObject::connect(
@@ -67,10 +206,10 @@ int main(int argc, char *argv[])
         &ventana,
         [&]()
         {
-            // Actualizar la lógica del juego
+            // Actualizar la lógica del juego.
             juego.actualizar();
 
-            // Consultar el proyectil activo
+            // Obtener el proyectil actual.
             Particula* proyectil = juego.getProyectilActual();
 
             if (proyectil != nullptr)
@@ -80,19 +219,21 @@ int main(int argc, char *argv[])
             else
             {
                 temporizador.stop();
+
                 ventana.eliminarProyectil();
 
                 cout << "Lanzamiento finalizado." << endl;
             }
 
-            // Actualizar estructuras y barras
+            // Actualizar las estructuras y sus resistencias.
             ventana.actualizarEstructuras();
 
-            // Comprobar si terminó la partida
+            // Comprobar si terminó la partida.
             if (juego.estaTerminado())
             {
                 temporizador.stop();
 
+                cout << endl;
                 cout << "Partida finalizada." << endl;
 
                 Jugador* ganador = juego.getGanador();
@@ -103,11 +244,19 @@ int main(int argc, char *argv[])
                          << ganador->getNombre()
                          << endl;
                 }
+                else
+                {
+                    cout << "No se pudo determinar un ganador."
+                         << endl;
+                }
             }
         }
         );
 
-    // 9. Conectar actualización del ángulo
+    // =====================================================
+    // 13. CONEXIÓN DE LOS INDICADORES
+    // =====================================================
+
     QObject::connect(
         &controles,
         &Controles::anguloActualizado,
@@ -115,7 +264,6 @@ int main(int argc, char *argv[])
         &rectangulo::actualizarAngulo
         );
 
-    // 10. Conectar actualización de potencia
     QObject::connect(
         &controles,
         &Controles::potenciaActualizada,
@@ -123,14 +271,17 @@ int main(int argc, char *argv[])
         &rectangulo::actualizarPotencia
         );
 
-    // 11. Conectar solicitud de lanzamiento
+    // =====================================================
+    // 14. CONEXIÓN DEL EVENTO DE LANZAMIENTO
+    // =====================================================
+
     QObject::connect(
         &controles,
         &Controles::lanzamientoSolicitado,
         &ventana,
         [&](double velocidad, double angulo)
         {
-            // Evitar dos lanzamientos simultáneos
+            // Evitar dos lanzamientos simultáneos.
             if (temporizador.isActive())
             {
                 cout << "Ya hay un lanzamiento en curso."
@@ -138,24 +289,27 @@ int main(int argc, char *argv[])
                 return;
             }
 
+            // No permitir lanzar después de terminar la partida.
             if (juego.estaTerminado())
+            {
                 return;
+            }
 
             Particula* nuevoProyectil = nullptr;
             Simulacion* nuevaSimulacion = nullptr;
 
             try
             {
-                // 1. Calcular punto de salida
+                // Obtener el punto de salida del proyectil.
                 auto punto = juego.calcularPuntoLanzamiento(
                     RADIO_PROYECTIL
                     );
 
-                // 2. Determinar dirección
+                // Determinar la dirección según el turno.
                 int direccion =
                     (juego.getTurnoActual() == 1) ? 1 : -1;
 
-                // 3. Crear proyectil
+                // Crear el proyectil.
                 nuevoProyectil = new Particula(
                     punto.first,
                     punto.second,
@@ -165,7 +319,7 @@ int main(int argc, char *argv[])
                     RADIO_PROYECTIL
                     );
 
-                // 4. Configurar lanzamiento
+                // Configurar velocidad y ángulo.
                 if (!nuevoProyectil->configurarLanzamiento(
                         velocidad,
                         angulo,
@@ -176,74 +330,98 @@ int main(int argc, char *argv[])
 
                     cout << "Error al configurar el lanzamiento."
                          << endl;
+
                     return;
                 }
 
-                // 5. Crear simulación
+                // Crear la simulación.
                 nuevaSimulacion = new Simulacion(
                     nuevoProyectil,
                     cajaFisica,
                     estructuras,
+                    &personaje1,
+                    &personaje2,
                     gravedad,
                     dt,
                     factorDanio
                     );
 
-                // 6. Entregar simulación a Juego
+                // Entregar la simulación al juego.
                 juego.iniciarSimulacion(nuevaSimulacion);
 
-                // Juego ahora es propietario de la simulación
-                // y Simulacion es propietaria del proyectil.
+                // El juego ahora administra la simulación.
                 nuevoProyectil = nullptr;
                 nuevaSimulacion = nullptr;
 
-                // 7. Dibujar proyectil
-                Particula* proyectil = juego.getProyectilActual();
+                // Dibujar el proyectil en la escena.
+                Particula* proyectil =
+                    juego.getProyectilActual();
 
                 if (proyectil != nullptr)
                 {
                     ventana.dibujarProyectil(*proyectil);
                 }
 
-                // 8. Iniciar simulación
+                // Iniciar el temporizador.
                 temporizador.start(10);
 
+                // Mostrar información del lanzamiento.
+                cout << endl;
+                cout << "================================" << endl;
+
                 cout << "Turno: "
-                     << juego.getTurnoActual() << endl;
+                     << juego.getTurnoActual()
+                     << endl;
 
                 cout << "Velocidad: "
-                     << velocidad << endl;
+                     << velocidad
+                     << endl;
 
                 cout << "Angulo: "
-                     << angulo << endl;
+                     << angulo
+                     << endl;
 
                 cout << "Punto de salida: ("
-                     << punto.first << ", "
-                     << punto.second << ")" << endl;
+                     << punto.first
+                     << ", "
+                     << punto.second
+                     << ")"
+                     << endl;
 
                 cout << "Direccion: "
-                     << direccion << endl;
+                     << direccion
+                     << endl;
+
+                cout << "================================"
+                     << endl;
             }
             catch (const exception& e)
             {
-                // Liberar solamente los objetos
-                // que todavía no fueron entregados a Juego.
-                delete nuevaSimulacion;
-
-                if (nuevaSimulacion == nullptr)
+                // Liberar memoria si no se entregó al juego.
+                if (nuevaSimulacion != nullptr)
+                {
+                    delete nuevaSimulacion;
+                }
+                else if (nuevoProyectil != nullptr)
                 {
                     delete nuevoProyectil;
                 }
 
                 cout << "Error al iniciar lanzamiento: "
-                     << e.what() << endl;
+                     << e.what()
+                     << endl;
             }
         }
         );
 
-    // 12. Mostrar ventana
+    // =====================================================
+    // 15. MOSTRAR VENTANA
+    // =====================================================
+
     ventana.mostrar();
+
     ventana.getVista()->setFocus();
 
+    // Iniciar aplicación.
     return app.exec();
 }

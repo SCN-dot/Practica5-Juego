@@ -1,79 +1,132 @@
 #include "Simulacion.h"
+
 #include <cmath>
 
-Simulacion::Simulacion(Particula* proyectil,Caja caja,const vector<Estructura*>& estructuras,double gravedad,double dt,double factorDanio)
-    : proyectil(proyectil),caja(caja),estructuras(estructuras),gravedad(gravedad),dt(dt),factorDanio(factorDanio),activa(true),tiempoTranscurrido(0.0),
-    tiempoMaximo(20.0)
+Simulacion::Simulacion(
+    Particula* proyectil,
+    Caja caja,
+    const vector<Estructura*>& estructuras,
+    Personaje* personaje1,
+    Personaje* personaje2,
+    double gravedad,
+    double dt,
+    double factorDanio
+    )
+    : proyectil(proyectil),
+    caja(caja),
+    estructuras(estructuras),
+    personaje1(personaje1),
+    personaje2(personaje2),
+    gravedad(gravedad),
+    dt(dt),
+    factorDanio(factorDanio),
+    activa(true),
+    tiempoTranscurrido(0.0),
+    tiempoMaximo(40.0)
 {
 }
 
 void Simulacion::actualizar()
 {
-    if (!activa || proyectil == nullptr) {
+    if (!activa || proyectil == nullptr)
         return;
-    }
+
     tiempoTranscurrido += dt;
 
-    if (tiempoTranscurrido >= tiempoMaximo) {
+    if (tiempoTranscurrido >= tiempoMaximo)
+    {
         activa = false;
         return;
     }
 
-    // 1. Obtener la velocidad actual
+    // =========================================
+    // 1. ACTUALIZAR POSICIÓN DEL PROYECTIL
+    // =========================================
+
     double vx = proyectil->getVx();
     double vy = proyectil->getVy();
 
-    // 2. Actualizar posicion
     double nuevaX = proyectil->getX() + vx * dt;
     double nuevaY = proyectil->getY() + vy * dt;
 
     proyectil->setPosicion(nuevaX, nuevaY);
 
-    // 3. Actualizar velocidad vertical por gravedad
+    // Aplicar gravedad
     vy += gravedad * dt;
 
     proyectil->setVelocidad(vx, vy);
 
-    // 4. Comprobar rebote contra las paredes
+    // =========================================
+    // 2. COLISIONES CON LAS PAREDES
+    // =========================================
+
     caja.rebotarParedes(*proyectil);
 
-    // 5. Comprobar colisiones contra estructuras
+    // =========================================
+    // 3. COLISIONES CON LAS ESTRUCTURAS
+    // =========================================
+
+    bool impactoEstructura = false;
+
     for (Estructura* estructura : estructuras)
     {
         if (estructura == nullptr ||
-            estructura->estaDestruida()) {
+            estructura->estaDestruida())
+        {
             continue;
         }
 
-        // Guardar velocidad antes del impacto
         double velocidadX = proyectil->getVx();
         double velocidadY = proyectil->getVy();
 
-        // Detectar y ejecutar el rebote
         Lado lado = caja.rebotarEstructura(
-            *proyectil, *estructura
+            *proyectil,
+            *estructura
             );
 
         if (lado != NINGUNO)
         {
-            // Calcular magnitud de la velocidad de impacto
             double rapidez = sqrt(
                 velocidadX * velocidadX +
                 velocidadY * velocidadY
                 );
 
-            // Calcular momento lineal
-            double momento =
-                proyectil->getMasa() * rapidez;
+            double momento = proyectil->getMasa() * rapidez;
 
-            // Calcular dano
             double dano = factorDanio * momento;
 
-            // Aplicar dano
             estructura->recibirDanio(dano);
 
-            // Un impacto por paso de simulacion
+            impactoEstructura = true;
+
             break;
+        }
+    }
+
+    // Si golpeó una estructura, no comprobamos
+    // un impacto sobre un personaje en este mismo paso.
+    if (impactoEstructura)
+        return;
+
+    // =========================================
+    // 4. COLISIONES CON LOS PERSONAJES
+    // =========================================
+
+    if (personaje1 != nullptr)
+    {
+        if (personaje1->recibirImpacto(*proyectil))
+        {
+            activa = false;
+            return;
+        }
+    }
+
+    if (personaje2 != nullptr)
+    {
+        if (personaje2->recibirImpacto(*proyectil))
+        {
+            activa = false;
+            return;
         }
     }
 }
@@ -81,17 +134,9 @@ void Simulacion::actualizar()
 bool Simulacion::estaActiva() const
 {
     return activa;
-
 }
-
 
 Particula* Simulacion::getProyectil() const
 {
     return proyectil;
-}
-
-Simulacion::~Simulacion()
-{
-    delete proyectil;
-    proyectil = nullptr;
 }

@@ -94,21 +94,21 @@ Jugador* Juego::getGanador() const
 }
 pair<double, double> Juego::calcularPuntoLanzamiento(double radio) const
 {
-    if (radio <= 0) {
+    if (radio <= 0)
         throw invalid_argument("El radio del proyectil debe ser positivo.");
-    }
 
-    const Estructura* estructura =
-        jugadores[turnoActual]->getEstructuraPrincipal();
+    const Personaje* personaje =
+        jugadores[turnoActual]->getPersonaje();
 
-    if (estructura == nullptr) {
-        throw logic_error("El jugador no tiene una estructura principal.");
-    }
+    if (personaje == nullptr)
+        throw logic_error("El jugador no tiene un personaje.");
 
-    double x = estructura->obtenerX()
-               + estructura->obtenerAncho() / 2.0;
+    // Centro horizontal de la fortificación
+    double x = personaje->obtenerX() +
+               personaje->obtenerAncho() / 2.0;
 
-    double y = estructura->obtenerY() - radio;
+    // Punto fijo por encima de la fortificación
+    double y = personaje->obtenerY() - 55.0;
 
     return {x, y};
 }

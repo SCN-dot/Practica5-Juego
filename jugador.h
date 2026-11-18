@@ -3,21 +3,23 @@
 #include <string>
 #include <vector>
 #include "Estructura.h"
+#include "Personaje.h"
 
 using namespace std;
 
-class Jugador
-{
+class Jugador{
 private:
     string nombre;
-    Estructura* estructuraPrincipal;
+    Personaje* personaje;
     vector<Estructura*> bloques;
 
 public:
-    Jugador(const string& nombre,Estructura* estructuraPrincipal,const vector<Estructura*>& bloques);
+    Jugador(const string& nombre, Personaje* personaje,const vector<Estructura*>& bloques);
+
     string getNombre() const;
-    Estructura* getEstructuraPrincipal() const;
+    Personaje* getPersonaje() const;
     const vector<Estructura*>& getBloques() const;
+
     bool haPerdido() const;
 };
 
