@@ -10,7 +10,6 @@ private:
 
 public:
     Personaje(double x, double y, double ancho, double alto);
-
     bool recibirImpacto(const Particula& proyectil);
     bool estaAlcanzado() const;
 };

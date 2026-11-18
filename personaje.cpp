@@ -20,7 +20,6 @@ bool Personaje::recibirImpacto(const Particula& proyectil)
     return false;
 }
 
-bool Personaje::estaAlcanzado() const
-{
+bool Personaje::estaAlcanzado() const{
     return alcanzado;
 }

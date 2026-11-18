@@ -15,11 +15,9 @@ private:
 
 public:
     Jugador(const string& nombre, Personaje* personaje,const vector<Estructura*>& bloques);
-
     string getNombre() const;
     Personaje* getPersonaje() const;
     const vector<Estructura*>& getBloques() const;
-
     bool haPerdido() const;
 };
 

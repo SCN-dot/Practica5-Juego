@@ -2,9 +2,7 @@
 #include <stdexcept>
 
 Juego::Juego(Jugador* jugador1, Jugador* jugador2)
-    : turnoActual(0),
-    simulacionActual(nullptr),
-    terminado(false)
+    : turnoActual(0),simulacionActual(nullptr),terminado(false)
 {
     if (jugador1 == nullptr || jugador2 == nullptr) {
         throw invalid_argument("Los dos jugadores deben existir.");
@@ -18,23 +16,19 @@ Juego::Juego(Jugador* jugador1, Jugador* jugador2)
     jugadores[1] = jugador2;
 }
 
-Jugador* Juego::getJugadorActual() const
-{
+Jugador* Juego::getJugadorActual() const{
     return jugadores[turnoActual];
 }
 
-int Juego::getTurnoActual() const
-{
+int Juego::getTurnoActual() const{
     return turnoActual + 1;
 }
 
-bool Juego::estaTerminado() const
-{
+bool Juego::estaTerminado() const{
     return terminado;
 }
 
-void Juego::iniciarSimulacion(Simulacion* simulacion)
-{
+void Juego::iniciarSimulacion(Simulacion* simulacion){
     if (terminado) {
         throw logic_error("La partida ya termino.");
     }
@@ -52,8 +46,7 @@ void Juego::iniciarSimulacion(Simulacion* simulacion)
     simulacionActual = simulacion;
 }
 
-void Juego::actualizar()
-{
+void Juego::actualizar(){
     if (terminado || simulacionActual == nullptr) {
         return;
     }
@@ -74,8 +67,7 @@ void Juego::actualizar()
     }
 }
 
-Jugador* Juego::getGanador() const
-{
+Jugador* Juego::getGanador() const{
     if (!terminado) {
         return nullptr;
     }
@@ -92,8 +84,7 @@ Jugador* Juego::getGanador() const
 
     return nullptr;
 }
-pair<double, double> Juego::calcularPuntoLanzamiento(double radio) const
-{
+pair<double, double> Juego::calcularPuntoLanzamiento(double radio) const{
     if (radio <= 0)
         throw invalid_argument("El radio del proyectil debe ser positivo.");
 
@@ -113,13 +104,11 @@ pair<double, double> Juego::calcularPuntoLanzamiento(double radio) const
     return {x, y};
 }
 
-Juego::~Juego()
-{
+Juego::~Juego(){
     delete simulacionActual;
     simulacionActual = nullptr;
 }
-Particula* Juego::getProyectilActual() const
-{
+Particula* Juego::getProyectilActual() const{
     if (simulacionActual == nullptr ||!simulacionActual->estaActiva()){
         return nullptr;
     }

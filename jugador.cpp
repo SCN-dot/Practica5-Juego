@@ -27,22 +27,18 @@ Jugador::Jugador(const string& nombre,
     }
 }
 
-string Jugador::getNombre() const
-{
+string Jugador::getNombre() const{
     return nombre;
 }
 
-Personaje* Jugador::getPersonaje() const
-{
+Personaje* Jugador::getPersonaje() const{
     return personaje;
 }
 
-const vector<Estructura*>& Jugador::getBloques() const
-{
+const vector<Estructura*>& Jugador::getBloques() const{
     return bloques;
 }
 
-bool Jugador::haPerdido() const
-{
+bool Jugador::haPerdido() const{
     return personaje->estaAlcanzado();
 }

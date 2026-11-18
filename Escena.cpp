@@ -13,18 +13,7 @@
 
 // Constructor
 rectangulo::rectangulo(double ancho, double alto)
-    : QObject(nullptr),
-    scene(nullptr),
-    rect(nullptr),
-    vista(nullptr),
-    proyectilGrafico(nullptr),
-    etiquetaAngulo(nullptr),
-    etiquetaPotencia(nullptr),
-    barraPotencia(nullptr),
-    panelControles(nullptr),
-    ancho(ancho),
-    alto(alto),
-    fondoGrafico(nullptr)
+    : QObject(nullptr),scene(nullptr),rect(nullptr),vista(nullptr),proyectilGrafico(nullptr),etiquetaAngulo(nullptr),etiquetaPotencia(nullptr),barraPotencia(nullptr),panelControles(nullptr),ancho(ancho),alto(alto),fondoGrafico(nullptr)
 {
     // Panel principal
     panelControles = new QWidget();
@@ -33,12 +22,7 @@ rectangulo::rectangulo(double ancho, double alto)
     scene = new QGraphicsScene(panelControles);
 
     // Marco de la caja
-    rect = scene->addRect(
-        0, 0,
-        ancho, alto,
-        QPen(Qt::black, 4),
-        QBrush(Qt::NoBrush)
-        );
+    rect = scene->addRect(0, 0,ancho, alto,QPen(Qt::black, 4),QBrush(Qt::NoBrush));
 
     // Vista
     vista = new QGraphicsView(scene, panelControles);
@@ -80,19 +64,14 @@ rectangulo::rectangulo(double ancho, double alto)
 }
 
 // Mostrar ventana
-void rectangulo::mostrar()
-{
+void rectangulo::mostrar(){
     panelControles->show();
 
-    vista->fitInView(
-        scene->sceneRect(),
-        Qt::KeepAspectRatio
-        );
+    vista->fitInView(scene->sceneRect(),Qt::KeepAspectRatio);
 }
 
 // Dibujar fondo
-void rectangulo::dibujarFondo(const QString& rutaImagen)
-{
+void rectangulo::dibujarFondo(const QString& rutaImagen){
     QPixmap imagen(rutaImagen);
 
     if (imagen.isNull()) {
@@ -119,16 +98,14 @@ void rectangulo::dibujarFondo(const QString& rutaImagen)
 }
 
 // Actualizar ángulo
-void rectangulo::actualizarAngulo(double angulo)
-{
+void rectangulo::actualizarAngulo(double angulo){
     etiquetaAngulo->setText(
         QString("Ángulo: %1°").arg(angulo, 0, 'f', 0)
         );
 }
 
 // Actualizar potencia
-void rectangulo::actualizarPotencia(double potencia)
-{
+void rectangulo::actualizarPotencia(double potencia){
     int valor = static_cast<int>(potencia);
 
     barraPotencia->setValue(valor);
@@ -139,20 +116,17 @@ void rectangulo::actualizarPotencia(double potencia)
 }
 
 // Obtener ancho
-double rectangulo::getAncho() const
-{
+double rectangulo::getAncho() const{
     return ancho;
 }
 
 // Obtener alto
-double rectangulo::getAlto() const
-{
+double rectangulo::getAlto() const{
     return alto;
 }
 
 // Modificar ancho
-void rectangulo::setAncho(double nuevoAncho)
-{
+void rectangulo::setAncho(double nuevoAncho){
     if (nuevoAncho <= 0)
         return;
 
@@ -164,8 +138,7 @@ void rectangulo::setAncho(double nuevoAncho)
 }
 
 // Modificar alto
-void rectangulo::setAlto(double nuevoAlto)
-{
+void rectangulo::setAlto(double nuevoAlto){
     if (nuevoAlto <= 0)
         return;
 
@@ -192,7 +165,6 @@ void rectangulo::dibujarEstructura(
 
     double yBarra = y - 15.0;
 
-    // Si se proporciona una imagen, se utiliza en lugar del rectángulo.
     if (!rutaImagen.isEmpty()) {
 
         QPixmap imagen(rutaImagen);
@@ -322,11 +294,9 @@ void rectangulo::dibujarPersonaje(
         scene->addPixmap(imagenEscalada);
 
     // Centrar la imagen dentro de las dimensiones del personaje.
-    double x = personaje.obtenerX()
-               + (anchoPersonaje - imagenEscalada.width()) / 2.0;
+    double x = personaje.obtenerX()+ (anchoPersonaje - imagenEscalada.width()) / 2.0;
 
-    double y = personaje.obtenerY()
-               + (altoPersonaje - imagenEscalada.height()) / 2.0;
+    double y = personaje.obtenerY()+ (altoPersonaje - imagenEscalada.height()) / 2.0;
 
     personajeGrafico->setPos(x, y);
     personajeGrafico->setZValue(2);
@@ -428,8 +398,7 @@ void rectangulo::actualizarEstructuras()
 }
 
 // Dibujar proyectil
-void rectangulo::dibujarProyectil(const Particula& proyectil)
-{
+void rectangulo::dibujarProyectil(const Particula& proyectil){
     if (proyectilGrafico != nullptr) {
         scene->removeItem(proyectilGrafico);
         delete proyectilGrafico;
@@ -454,8 +423,7 @@ void rectangulo::dibujarProyectil(const Particula& proyectil)
 }
 
 // Actualizar posición del proyectil
-void rectangulo::actualizarProyectil(const Particula& proyectil)
-{
+void rectangulo::actualizarProyectil(const Particula& proyectil){
     if (proyectilGrafico == nullptr)
         return;
 
@@ -473,8 +441,7 @@ void rectangulo::actualizarProyectil(const Particula& proyectil)
 }
 
 // Eliminar proyectil
-void rectangulo::eliminarProyectil()
-{
+void rectangulo::eliminarProyectil(){
     if (proyectilGrafico != nullptr) {
         scene->removeItem(proyectilGrafico);
         delete proyectilGrafico;

@@ -23,14 +23,10 @@ using namespace std;
 struct ElementoGrafico
 {
     const Estructura* estructura;
-
-    // Solo uno de estos elementos se utiliza para representar el bloque.
     QGraphicsRectItem* figura;
     QGraphicsPixmapItem* imagen;
-
     QGraphicsRectItem* barraFondo;
     QGraphicsRectItem* barraResistencia;
-
     double yBarra;
 };
 
@@ -40,59 +36,32 @@ private:
     QGraphicsScene* scene;
     QGraphicsRectItem* rect;
     QGraphicsView* vista;
-
     QGraphicsEllipseItem* proyectilGrafico;
-
     QLabel* etiquetaAngulo;
     QLabel* etiquetaPotencia;
     QProgressBar* barraPotencia;
-
     QWidget* panelControles;
-
     double ancho;
     double alto;
-
     QGraphicsPixmapItem* fondoGrafico;
     vector<QGraphicsPixmapItem*> personajesGraficos;
-
     vector<ElementoGrafico> estructurasGraficas;
 
 public:
     rectangulo(double ancho, double alto);
-
     void actualizarAngulo(double angulo);
     void actualizarPotencia(double potencia);
-
     void mostrar();
-
     QGraphicsView* getVista() const;
-
     void dibujarFondo(const QString& rutaImagen);
-
-    void dibujarEstructura(
-        const Estructura& estructura,
-        const QString& rutaImagen = QString()
-        );
-
-    void dibujarPersonaje(
-        const Personaje& personaje,
-        const QString& rutaImagen
-        );
-
-    // Se conserva esta versión por compatibilidad con el dibujo anterior.
-    void dibujarPersonaje(
-        const Personaje& personaje,
-        const QColor& color
-        );
-
+    void dibujarEstructura(const Estructura& estructura,const QString& rutaImagen = QString());
+    void dibujarPersonaje(const Personaje& personaje,const QString& rutaImagen);
+    void dibujarPersonaje(const Personaje& personaje,const QColor& color);
     void actualizarEstructuras();
-
     double getAncho() const;
     double getAlto() const;
-
     void setAncho(double nuevoAncho);
     void setAlto(double nuevoAlto);
-
     void dibujarProyectil(const Particula& proyectil);
     void actualizarProyectil(const Particula& proyectil);
     void eliminarProyectil();

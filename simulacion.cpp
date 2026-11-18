@@ -39,9 +39,7 @@ void Simulacion::actualizar()
         return;
     }
 
-    // =========================================
     // 1. ACTUALIZAR POSICIÓN DEL PROYECTIL
-    // =========================================
 
     double vx = proyectil->getVx();
     double vy = proyectil->getVy();
@@ -56,87 +54,61 @@ void Simulacion::actualizar()
 
     proyectil->setVelocidad(vx, vy);
 
-    // =========================================
     // 2. COLISIONES CON LAS PAREDES
-    // =========================================
 
     caja.rebotarParedes(*proyectil);
 
-    // =========================================
+
     // 3. COLISIONES CON LAS ESTRUCTURAS
-    // =========================================
 
     bool impactoEstructura = false;
 
-    for (Estructura* estructura : estructuras)
-    {
+    for (Estructura* estructura : estructuras){
         if (estructura == nullptr ||
-            estructura->estaDestruida())
-        {
+            estructura->estaDestruida()){
             continue;
         }
 
         double velocidadX = proyectil->getVx();
         double velocidadY = proyectil->getVy();
 
-        Lado lado = caja.rebotarEstructura(
-            *proyectil,
-            *estructura
-            );
+        Lado lado = caja.rebotarEstructura(*proyectil,*estructura);
 
-        if (lado != NINGUNO)
-        {
-            double rapidez = sqrt(
-                velocidadX * velocidadX +
-                velocidadY * velocidadY
-                );
-
+        if (lado != NINGUNO){
+            double rapidez = sqrt(velocidadX * velocidadX +velocidadY * velocidadY);
             double momento = proyectil->getMasa() * rapidez;
-
             double dano = factorDanio * momento;
-
             estructura->recibirDanio(dano);
-
             impactoEstructura = true;
 
             break;
         }
     }
 
-    // Si golpeó una estructura, no comprobamos
-    // un impacto sobre un personaje en este mismo paso.
     if (impactoEstructura)
         return;
-
-    // =========================================
     // 4. COLISIONES CON LOS PERSONAJES
-    // =========================================
 
-    if (personaje1 != nullptr)
-    {
-        if (personaje1->recibirImpacto(*proyectil))
-        {
+
+    if (personaje1 != nullptr){
+        if (personaje1->recibirImpacto(*proyectil)){
             activa = false;
             return;
         }
     }
 
-    if (personaje2 != nullptr)
-    {
-        if (personaje2->recibirImpacto(*proyectil))
-        {
+    if (personaje2 != nullptr){
+        if (personaje2->recibirImpacto(*proyectil)){
             activa = false;
             return;
         }
     }
 }
 
-bool Simulacion::estaActiva() const
-{
+bool Simulacion::estaActiva() const{
     return activa;
 }
 
-Particula* Simulacion::getProyectil() const
-{
+Particula* Simulacion::getProyectil() const{
     return proyectil;
 }
