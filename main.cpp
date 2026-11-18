@@ -7,6 +7,7 @@
 #include "particula.h"
 #include "Caja.h"
 #include "Simulacion.h"
+#include "controles.h"
 
 using namespace std;
 
@@ -20,7 +21,8 @@ int main(int argc, char *argv[])
 
     // 2. Crear la caja gráfica
     rectangulo ventana(ANCHO_CAJA, ALTO_CAJA);
-
+    Controles controles;
+    controles.instalarEn(ventana.getVista());
     // 3. Crear las estructuras
     Estructura estructura1(50, 390, 150, 150, 100, true);
     Estructura estructura2(800, 390, 150, 150, 100, true);
@@ -56,8 +58,8 @@ int main(int argc, char *argv[])
 
     // 10. Crear la simulación
     double gravedad = 9.81;
-    double dt = 0.01;
-    double factorDanio = 0.0; // Temporalmente desactivamos el daño
+    double dt = 0.05;
+    double factorDanio = 2; // Temporalmente desactivamos el daño
 
     Simulacion simulacion(
         &proyectil,
@@ -82,6 +84,8 @@ int main(int argc, char *argv[])
                 *simulacion.getProyectil()
                 );
 
+            ventana.actualizarEstructuras();
+
             if (!simulacion.estaActiva()) {
                 temporizador.stop();
                 cout << "Simulacion finalizada" << endl;
@@ -91,8 +95,8 @@ int main(int argc, char *argv[])
 
     // 12. Mostrar ventana e iniciar simulación
     ventana.mostrar();
+    ventana.getVista()->setFocus();
 
-    temporizador.start(10);
 
     return app.exec();
 }

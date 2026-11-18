@@ -14,6 +14,9 @@ struct ElementoGrafico
 {
     const Estructura* estructura;
     QGraphicsRectItem* figura;
+
+    QGraphicsRectItem* barraFondo;
+    QGraphicsRectItem* barraResistencia;
 };
 
 class rectangulo
@@ -33,7 +36,7 @@ public:
     rectangulo(double ancho, double alto);
 
     void mostrar();
-
+    QGraphicsView* getVista() const;
     void dibujarEstructura(const Estructura& estructura);
 
     void actualizarEstructuras();

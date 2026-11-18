@@ -11,6 +11,7 @@ SOURCES += \
     Escena.cpp \
     Estructura.cpp \
     Obstaculo.cpp \
+    controles.cpp \
     juego.cpp \
     jugador.cpp \
     main.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     Escena.h \
     Estructura.h \
     Obstaculo.h \
+    controles.h \
     juego.h \
     jugador.h \
     particula.h \

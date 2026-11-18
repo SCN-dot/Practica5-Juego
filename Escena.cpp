@@ -60,6 +60,7 @@ void rectangulo::setAlto(double nuevoAlto)
 
 void rectangulo::dibujarEstructura(const Estructura& estructura)
 {
+    // Dibujar estructura
     QGraphicsRectItem* figura = scene->addRect(
         estructura.obtenerX(),
         estructura.obtenerY(),
@@ -69,10 +70,38 @@ void rectangulo::dibujarEstructura(const Estructura& estructura)
         QBrush(Qt::NoBrush)
         );
 
+    // Dimensiones de la barra
+    double anchoBarra = estructura.obtenerAncho();
+    double altoBarra = 8.0;
+
+    double x = estructura.obtenerX();
+    double y = estructura.obtenerY() - 15.0;
+
+    // Fondo de la barra
+    QGraphicsRectItem* barraFondo = scene->addRect(
+        x, y, anchoBarra, altoBarra,
+        QPen(Qt::black, 1),
+        QBrush(Qt::gray)
+        );
+
+    // Barra de resistencia actual
+    double porcentaje =
+        estructura.getResistencia() /
+        estructura.getResistenciaMax();
+
+    QGraphicsRectItem* barraResistencia = scene->addRect(
+        x, y, anchoBarra * porcentaje, altoBarra,
+        QPen(Qt::NoPen),
+        QBrush(Qt::green)
+        );
+
+    // Guardar referencias
     ElementoGrafico elemento;
 
     elemento.estructura = &estructura;
     elemento.figura = figura;
+    elemento.barraFondo = barraFondo;
+    elemento.barraResistencia = barraResistencia;
 
     estructurasGraficas.push_back(elemento);
 }
@@ -111,22 +140,60 @@ void rectangulo::actualizarProyectil(const Particula& proyectil)
         radio * 2
         );
 }
+QGraphicsView* rectangulo::getVista() const
+{
+    return vista;
+}
 void rectangulo::actualizarEstructuras()
 {
     auto it = estructurasGraficas.begin();
 
     while (it != estructurasGraficas.end())
     {
-        if (it->estructura->estaDestruida())
+        const Estructura* estructura = it->estructura;
+
+        if (estructura->estaDestruida())
         {
             scene->removeItem(it->figura);
+            scene->removeItem(it->barraFondo);
+            scene->removeItem(it->barraResistencia);
 
             delete it->figura;
+            delete it->barraFondo;
+            delete it->barraResistencia;
 
             it = estructurasGraficas.erase(it);
         }
         else
         {
+            double porcentaje =
+                estructura->getResistencia() /
+                estructura->getResistenciaMax();
+
+            if (porcentaje < 0.0)
+                porcentaje = 0.0;
+
+            if (porcentaje > 1.0)
+                porcentaje = 1.0;
+
+            double anchoActual =
+                estructura->obtenerAncho() * porcentaje;
+
+            it->barraResistencia->setRect(
+                estructura->obtenerX(),
+                estructura->obtenerY() - 15.0,
+                anchoActual,
+                8.0
+                );
+
+            // Cambiar el color según la resistencia
+            if (porcentaje > 0.5)
+                it->barraResistencia->setBrush(QBrush(Qt::green));
+            else if (porcentaje > 0.2)
+                it->barraResistencia->setBrush(QBrush(Qt::yellow));
+            else
+                it->barraResistencia->setBrush(QBrush(Qt::red));
+
             ++it;
         }
     }
