@@ -96,7 +96,25 @@ void rectangulo::dibujarFondo(const QString& rutaImagen){
     fondoGrafico->setPos(0, 0);
     fondoGrafico->setZValue(-100);
 }
+void rectangulo::dibujarBarrera(
+    double x,
+    double y,
+    double anchoBarrera,
+    double altoBarrera
+    )
+{
+    QGraphicsRectItem* barrera = scene->addRect(
+        x,
+        y,
+        anchoBarrera,
+        altoBarrera,
+        QPen(QColor(235, 185, 45), 3),
+        QBrush(QColor(65, 72, 78))
+        );
 
+    // Mantenerla por encima del fondo.
+    barrera->setZValue(2.5);
+}
 // Actualizar ángulo
 void rectangulo::actualizarAngulo(double angulo){
     etiquetaAngulo->setText(

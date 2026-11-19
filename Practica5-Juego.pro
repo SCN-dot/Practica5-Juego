@@ -15,6 +15,7 @@ SOURCES += \
     juego.cpp \
     jugador.cpp \
     main.cpp \
+    menu.cpp \
     particula.cpp \
     personaje.cpp \
     simulacion.cpp
@@ -27,6 +28,7 @@ HEADERS += \
     controles.h \
     juego.h \
     jugador.h \
+    menu.h \
     particula.h \
     personaje.h \
     simulacion.h

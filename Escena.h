@@ -57,6 +57,7 @@ public:
     void dibujarEstructura(const Estructura& estructura,const QString& rutaImagen = QString());
     void dibujarPersonaje(const Personaje& personaje,const QString& rutaImagen);
     void dibujarPersonaje(const Personaje& personaje,const QColor& color);
+    void dibujarBarrera(double x,double y,double anchoBarrera,double altoBarrera);
     void actualizarEstructuras();
     double getAncho() const;
     double getAlto() const;
